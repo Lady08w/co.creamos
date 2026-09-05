@@ -59,25 +59,29 @@ nombres exactos para saber en qué tarjeta poner cada foto.
 7. Refresca el sitio — la foto nueva debería aparecer. Puede tardar unos
    minutos en reflejarse por el caché de Google.
 
-### Configuración inicial (una sola vez, ya casi lista)
+### Configuración inicial (ya hecha, una sola vez)
 
-Para que el sitio pueda leer la hoja, la hoja se debe "publicar en la web"
-como CSV **una sola vez**:
+Para que el sitio pueda leer la hoja sin usar contraseñas ni claves de API,
+la hoja se compartió igual que cualquier foto de Drive:
 
-1. Abre la hoja → **Archivo → Compartir → Publicar en la web**.
-2. En el menú, elige la hoja correcta y el formato **"Valores separados por comas (.csv)"**.
-3. Clic en **Publicar**, confirma.
-4. Copia el enlace que te da (termina en algo como `.../pub?output=csv`).
-5. Pásame ese enlace (a Claude) o pégalo tú misma en `index.html`: busca la
-   línea que dice
+1. Abrir la hoja → botón **Compartir** → acceso general → **"Cualquier
+   persona con el enlace"** → rol **Lector**.
+2. Con eso, este enlace ya sirve para leer la hoja como CSV en cualquier
+   momento (Google lo arma solo a partir del ID de la hoja):
 
-   ```js
-   var SHEET_CSV_URL = '';
+   ```
+   https://docs.google.com/spreadsheets/d/1ggf5AH_AMItsI9gKb0OYroEMQLKzQyZ9UcXEifv0L5Y/export?format=csv
    ```
 
-   y pon el enlace entre las comillas. Sube el cambio a GitHub y listo —
-   **ese es el único cambio de código que hace falta, y es de una sola vez**.
-   De ahí en adelante, todo lo demás se edita solo desde la hoja de Sheets.
+3. Ese enlace ya está pegado en `index.html`, en la línea:
+
+   ```js
+   var SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1ggf5AH_AMItsI9gKb0OYroEMQLKzQyZ9UcXEifv0L5Y/export?format=csv';
+   ```
+
+   **Esto ya quedó listo — no hay que repetirlo.** Si algún día creas una
+   hoja nueva (otro ID), ese es el único caso en que tocaría cambiar esta
+   línea y volver a subir el cambio a GitHub.
 
 ## Qué NO se automatizó (a propósito)
 
