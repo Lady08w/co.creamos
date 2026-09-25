@@ -1,6 +1,6 @@
 # Co·Creamos — sitio web
 
-Este repositorio tiene el código del sitio [cocreamos.netlify.app](https://cocreamos.netlify.app/).
+Este repositorio tiene el código del sitio [cocreamos.pro](https://cocreamos.pro/).
 
 ## Estructura
 
@@ -59,6 +59,74 @@ nombres exactos para saber en qué tarjeta poner cada foto.
 7. Refresca el sitio — la foto nueva debería aparecer. Puede tardar unos
    minutos en reflejarse por el caché de Google.
 
+## Cómo editar los textos y precios de "Soluciones" sin tocar código
+
+El título, la descripción y la lista de puntos de cada tarjeta de
+Soluciones también se leen en vivo desde una hoja de Sheets, igual que las
+fotos (son dos hojas distintas, cada una con su propio trabajo).
+
+Hoja: **[Co·Creamos — Contenido Soluciones](https://docs.google.com/spreadsheets/d/1v_v3RepuCJKcb0fv8c_NgLxQbtIyKONdl-ab2Oc5jgQ/edit)**
+
+Columnas:
+
+| tarjeta | numero | titulo | descripcion | items |
+|---|---|---|---|---|
+
+- **tarjeta**: no la cambies — es la misma palabra clave que usa la hoja de
+  fotos (`canales`, `catalogo_digital`, `atencion_inteligente`, `campanas`)
+  para saber a cuál tarjeta le pertenece cada fila.
+- **numero**: el numerito que aparece arriba del título (01, 02, 03, 04).
+- **titulo**: el nombre de la tarjeta (ej. "Canales").
+- **descripcion**: la frase corta debajo del título. Si quieres que una
+  palabra salga en cursiva, ponle asteriscos alrededor, así: `Haz que te
+  *encuentren* donde ya está tu público.` — la palabra entre los dos `*`
+  sale en cursiva, el resto queda normal.
+- **items**: los puntos de la lista, todos en la misma celda, separados por
+  ` / ` (espacio, barra, espacio). Ejemplo: `Apertura de nuevos canales /
+  Creación de calendario de contenido`. También puedes usar Alt+Enter
+  (Option+Enter en Mac) para poner cada punto en su propia línea dentro de
+  la misma celda, como prefieras.
+
+**Nota:** esta hoja solo cambia texto y precios — la foto de cada tarjeta se
+sigue manejando desde la otra hoja ("Imágenes Soluciones"), son
+independientes.
+
+## Cómo editar los planes y sus precios sin tocar código
+
+Igual que arriba: toda la sección "Planes" (las preguntas, los pasos, el
+ciclo y la inversión) se lee en vivo desde otra hoja de Sheets.
+
+Hoja: **[Co·Creamos — Planes](https://docs.google.com/spreadsheets/d/18kwKDb_f3bJi5s-l9wZ3zzEUy0U-NFv-vD76kzPObso/edit)**
+
+Columnas:
+
+| numero | icono | pregunta | ciclo | pasos | precio | detalle_precio | abierto |
+|---|---|---|---|---|---|---|---|
+
+- **numero**: el numerito grande a la izquierda de la pregunta (puede ser
+  cualquier texto corto, no tiene que ser un número en orden — por eso el
+  plan "empezar de cero" muestra un `0`).
+- **icono**: el emoji redondo (🎯 🚀 🔁 🌱, o el que quieras).
+- **pregunta**: el texto de la pregunta, ej. "Quiero atraer nuevos clientes".
+- **ciclo**: solo la duración, ej. `3 meses` — el sitio le pone
+  automáticamente el "◷ CICLO ·" delante.
+- **pasos**: cada paso del plan, todos en la misma celda, separados por
+  ` / ` (o con Alt+Enter para líneas separadas, igual que en Soluciones).
+  Pueden ser tantos pasos como quieras, no está limitado a 6.
+- **precio**: lo que sale grande y en negrita, ej. `$350.000/mes`.
+- **detalle_precio**: el texto chico al lado del precio, ej. `/ 3 meses ·
+  total $1.050.000`.
+- **abierto**: escribe `si` en la fila del plan que quieres que aparezca ya
+  abierto cuando alguien entra al sitio (debe haber solo una fila con
+  `si`); las demás pueden decir `no` o dejarse vacías.
+
+**El orden en que aparecen los planes en el sitio es el mismo orden en que
+están las filas en la hoja** — si quieres cambiar el orden, corta y pega la
+fila donde quieras (clic derecho sobre el número de la fila → Cortar /
+Insertar filas cortadas). También puedes agregar una fila nueva para un
+plan adicional, o borrar una fila para quitar un plan — el sitio se ajusta
+solo a la cantidad de filas que tenga la hoja.
+
 ### Configuración inicial (ya hecha, una sola vez)
 
 Para que el sitio pueda leer la hoja sin usar contraseñas ni claves de API,
@@ -82,6 +150,12 @@ la hoja se compartió igual que cualquier foto de Drive:
    **Esto ya quedó listo — no hay que repetirlo.** Si algún día creas una
    hoja nueva (otro ID), ese es el único caso en que tocaría cambiar esta
    línea y volver a subir el cambio a GitHub.
+
+Las hojas de **Contenido Soluciones** y **Planes** funcionan exactamente
+igual, y cada una tiene que compartirse de la misma forma ("Cualquier
+persona con el enlace" → Lector) para que el sitio pueda leerlas — sin
+ese paso, el sitio simplemente se queda mostrando el texto de siempre
+(el que ya trae por defecto) hasta que la compartas.
 
 ## Qué NO se automatizó (a propósito)
 
