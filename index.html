@@ -88,7 +88,7 @@ body.solmodal-lock{overflow:hidden}
 .wa-float:hover{transform:scale(1.08)}
 .wa-float svg{width:30px;height:30px;display:block}
 @media(max-width:640px){.wa-float{width:52px;height:52px;bottom:18px;right:18px}.wa-float svg{width:26px;height:26px}}
-.portshow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;max-width:820px;margin:0 auto}.portcell{aspect-ratio:1/1;border-radius:20px;overflow:hidden;cursor:pointer;background:#0d0a16;box-shadow:0 14px 34px rgba(120,95,200,.2);border:1px solid rgba(255,255,255,.7);position:relative;transition:transform .25s ease}.portcell:hover{transform:translateY(-4px)}.portcell img{width:100%;height:100%;object-fit:cover;display:block}.portplay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}.portplay svg{width:36px;height:36px}@media(max-width:760px){.portshow{gap:8px}}.portmodal-overlay{position:fixed;inset:0;background:rgba(26,22,38,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;z-index:999;opacity:0;pointer-events:none;transition:opacity .25s ease}.portmodal-overlay.is-open{opacity:1;pointer-events:auto}.portmodal{position:relative;max-width:720px;width:100%;max-height:88vh}.portmodal-close{position:absolute;top:-44px;right:0;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.9);border:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;z-index:2}.portmodal-media{width:100%;max-height:80vh;display:flex;align-items:center;justify-content:center;background:#0d0a16;border-radius:18px;overflow:hidden}.portmodal-media img{width:auto;height:auto;max-width:100%;max-height:80vh;object-fit:contain}.portmodal-media iframe{width:100%;aspect-ratio:16/9;border:none;display:block}@media(max-width:640px){.portmodal-close{top:-40px}}</style>
+.portshow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;max-width:820px;margin:0 auto}.portcell{aspect-ratio:9/16;border-radius:20px;overflow:hidden;cursor:pointer;background:#0d0a16;box-shadow:0 14px 34px rgba(120,95,200,.2);border:1px solid rgba(255,255,255,.7);position:relative;transition:transform .25s ease}.portcell:hover{transform:translateY(-4px)}.portcell img{width:100%;height:100%;object-fit:cover;display:block}.portplay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}.portplay svg{width:36px;height:36px}@media(max-width:760px){.portshow{gap:8px}}.portmodal-overlay{position:fixed;inset:0;background:rgba(26,22,38,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;z-index:999;opacity:0;pointer-events:none;transition:opacity .25s ease}.portmodal-overlay.is-open{opacity:1;pointer-events:auto}.portmodal{position:relative;max-width:720px;width:100%;max-height:88vh}.portmodal.is-video{max-width:380px}.portmodal-close{position:absolute;top:-44px;right:0;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.9);border:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;z-index:2}.portmodal-media{width:100%;max-height:80vh;display:flex;align-items:center;justify-content:center;background:#0d0a16;border-radius:18px;overflow:hidden}.portmodal-media img{width:auto;height:auto;max-width:100%;max-height:80vh;object-fit:contain}.portmodal-media iframe{width:100%;aspect-ratio:16/9;border:none;display:block}.portmodal-media.is-video{aspect-ratio:9/16;height:min(80vh,760px);width:auto;margin:0 auto}.portmodal-media.is-video iframe{height:100%;aspect-ratio:auto}@media(max-width:640px){.portmodal-close{top:-40px}}</style>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -322,16 +322,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     return m ? m[1] : null;
   }
 
+  // Igual que en el portafolio de reels: acepta /file/d/ID/, ?id=ID y open?id=ID
+  function drivePortId(url){
+    if (!url) return null;
+    var m = String(url).match(/\/d\/([a-zA-Z0-9_-]{10,})/) || String(url).match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
+    return m ? m[1] : null;
+  }
+
   function fillPortSlot(el, tipo, url){
     if (!el || !url) return;
     var img = el.querySelector('img');
     if (!img) return;
     if (tipo === 'video'){
       var ytId = youTubeIdFromUrl(url);
-      if (!ytId) return;
-      img.src = 'https://img.youtube.com/vi/' + ytId + '/hqdefault.jpg';
+      var drId = ytId ? null : drivePortId(url);
+      if (!ytId && !drId) return;
+      img.src = ytId
+        ? ('https://img.youtube.com/vi/' + ytId + '/hqdefault.jpg')
+        : ('https://drive.google.com/thumbnail?id=' + drId + '&sz=w1000');
       el.setAttribute('data-tipo', 'video');
-      el.setAttribute('data-yt', ytId);
+      if (ytId) el.setAttribute('data-yt', ytId);
+      if (drId) el.setAttribute('data-drive', drId);
       if (!el.querySelector('.portplay')){
         el.insertAdjacentHTML('beforeend', '<div class="portplay"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="rgba(26,22,38,.55)"></circle><path d="M10 8l6 4-6 4V8z" fill="#fff"></path></svg></div>');
       }
@@ -494,16 +505,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   var media = document.getElementById('portModalMedia');
   var closeBtn = document.getElementById('portModalClose');
 
+  var portModalBox = overlay.querySelector('.portmodal');
+
   function openPortModal(el){
     var tipo = el.getAttribute('data-tipo');
-    if (tipo === 'video'){
+    var esVideo = tipo === 'video';
+    if (esVideo){
       var yt = el.getAttribute('data-yt');
-      media.innerHTML = yt ? ('<iframe src="https://www.youtube.com/embed/' + yt + '?autoplay=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>') : '';
+      var dr = el.getAttribute('data-drive');
+      if (yt){
+        media.innerHTML = '<iframe src="https://www.youtube.com/embed/' + yt + '?autoplay=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+      } else if (dr){
+        media.innerHTML = '<iframe src="https://drive.google.com/file/d/' + dr + '/preview" allow="autoplay" allowfullscreen></iframe>';
+      } else {
+        media.innerHTML = '';
+        esVideo = false;
+      }
     } else {
       var imgEl = el.querySelector('img');
       var src = imgEl ? imgEl.src : el.getAttribute('data-full');
       media.innerHTML = '<img src="' + src + '" alt="">';
     }
+    if (portModalBox) portModalBox.classList.toggle('is-video', esVideo);
+    media.classList.toggle('is-video', esVideo);
     overlay.classList.add('is-open');
     document.body.classList.add('solmodal-lock');
   }
